@@ -42,7 +42,6 @@ export default function Home() {
         setIcons(newIcons);
     }, []);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleRandom = useCallback((e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const from =
