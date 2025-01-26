@@ -42,6 +42,7 @@ export default function Home() {
         setIcons(newIcons);
     }, []);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleRandom = useCallback(() => {
         const from =
             HASH_PRICE[(amountRange[0] / 1000) as keyof typeof HASH_PRICE];
