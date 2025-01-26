@@ -122,11 +122,6 @@ export default function AddBankAccount() {
                     />
                 </div>
                 <DialogFooter>
-                    <div
-                        className="cf-turnstile"
-                        data-sitekey="0x4AAAAAAA6VRM7hf-jlCBVw"
-                        data-callback="javascriptCallback"
-                    ></div>
                     <ShinyButton onClick={handleSave}>Lưu ngay</ShinyButton>
                 </DialogFooter>
             </DialogContent>

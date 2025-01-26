@@ -66,25 +66,36 @@ export default function Home() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.85 }}
             >
-                <SparklesText
-                    text="Lì Xì Ngay!"
-                    className="mb-6 text-[#FF4848]"
-                />
-                <Slider
-                    min={10000}
-                    max={500000}
-                    step={10000}
-                    value={amountRange}
-                    onValueChange={setAmountRange}
-                    className="cursor-pointer mt-4"
-                />
-                <div className="flex justify-between text-black my-4 w-full font-pacifico text-2xl">
-                    <span>{formatCurrency(amountRange[0])} </span>
-                    <span>{formatCurrency(amountRange[1])}</span>
-                </div>
-                <ShinyButton onClick={handleRandom} className="mt-2 font-mono ">
-                    vào ngay
-                </ShinyButton>
+                <form action="/config" method="POST" onSubmit={(e) => {
+                    e.preventDefault();
+                    console.log('submit', amountRange);
+                }} className="flex flex-col items-center w-full">
+                    <SparklesText
+                        text="Lì Xì Ngay!"
+                        className="mb-6 text-[#FF4848]"
+                    />
+                    <Slider
+                        min={10000}
+                        max={500000}
+                        step={10000}
+                        value={amountRange}
+                        name="amount"
+                        onValueChange={setAmountRange}
+                        className="cursor-pointer mt-4"
+                    />
+                    <div className="flex justify-between text-black my-4 w-full font-pacifico text-2xl">
+                        <span>{formatCurrency(amountRange[0])} </span>
+                        <span>{formatCurrency(amountRange[1])}</span>
+                    </div>
+                    <div
+                        className="cf-turnstile"
+                        data-sitekey="0x4AAAAAAA6VRM7hf-jlCBVw"
+                        data-callback="javascriptCallback"
+                    ></div>
+                    <ShinyButton type="submit" className="mt-2 font-mono ">
+                        vào ngay
+                    </ShinyButton>
+                </form>
             </motion.div>
         </>
     );

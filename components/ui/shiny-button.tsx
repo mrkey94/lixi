@@ -27,9 +27,10 @@ const animationProps = {
 
 interface ShinyButtonProps
     extends Omit<React.HTMLAttributes<HTMLElement>, keyof MotionProps>,
-        MotionProps {
+    MotionProps {
     children: React.ReactNode;
     className?: string;
+    type?: "submit" | "button";
 }
 
 export const ShinyButton = React.forwardRef<
