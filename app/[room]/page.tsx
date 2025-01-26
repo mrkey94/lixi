@@ -87,6 +87,14 @@ export default function PageRandom({
             body: JSON.stringify({ id, accountId: accountNumber }),
         });
         const data = await response.json();
+        if (data.message) {
+            toast({
+                variant: "destructive",
+                title: "Hmm",
+                description: data.message,
+            });
+            return;
+        }
         setMoney(data.money);
         setImgQr(`https://qr.sepay.vn/img?bank=${code}&acc=${accountNumber}&template=qronly&amount=${data.money}&des=CHUC MUNG NAM MOI 2025`);
 
