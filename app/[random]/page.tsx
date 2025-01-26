@@ -21,11 +21,16 @@ export default function PageRandom({
     const [icons, setIcons] = useState<React.ReactElement[]>([]);
     const [visibleVolume, setVisibleVolume] = useState(true);
     const { toast } = useToast();
+    const [amoutRange, setAmountRange] = useState<number[]>([]);
 
     useEffect(() => {
         (async () => {
             const hash = (await params).random;
-            console.log(hash);
+            fetch(`/api/room?id=${hash}`).then((res) => res.json()).then((data) => {
+                if (data.from && data.to) {
+                    setAmountRange([+(data?.from ?? 10000), +(data?.to ?? 20000)]);
+                }
+            });
         })();
     }, [params]);
 
