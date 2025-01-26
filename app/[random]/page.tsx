@@ -11,8 +11,6 @@ import AddBankAccount from "@/components/common/AddBankAccount";
 import { Toaster } from "@/components/ui/toaster";
 import { getItem } from "@/lib/localStorage.helper";
 
-export const runtime = 'edge';
-
 export default function PageRandom({
     params,
 }: {

@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/mongo-connect";
 import lixi from "@/model/lixi.model";
 import { NextResponse } from "next/server";
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 export async function POST(request: Request) {
   const body = await request.json();
