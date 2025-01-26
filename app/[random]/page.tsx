@@ -21,7 +21,8 @@ export default function PageRandom({
     const [icons, setIcons] = useState<React.ReactElement[]>([]);
     const [visibleVolume, setVisibleVolume] = useState(true);
     const { toast } = useToast();
-    const [amoutRange, setAmountRange] = useState<number[]>([]);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [amountRange, setAmountRange] = useState<number[]>([]);
 
     useEffect(() => {
         (async () => {
