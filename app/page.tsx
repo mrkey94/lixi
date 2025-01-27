@@ -2,7 +2,6 @@
 
 import { AnimatedIcon } from "@/components/common/AnimatedIcon";
 import { MorphingText } from "@/components/ui/morphing-text";
-import { Slider } from "@/components/ui/slider";
 import { formatCurrency } from "@/lib/price.helper";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -10,6 +9,7 @@ import { SparklesText } from "@/components/ui/sparkles-text";
 import { ShinyButton } from "@/components/ui/shiny-button";
 import { useRouter } from "next/navigation";
 import { HASH_PRICE, ListIconTet } from "@/constants";
+import { ConfigProvider, Slider as SliderAntd } from 'antd';
 
 const texts = [
     "Chúc mừng năm mới!",
@@ -81,15 +81,23 @@ export default function Home() {
                         text="Lì Xì Ngay!"
                         className="mb-6 text-[#FF4848]"
                     />
-                    <Slider
-                        min={10000}
-                        max={500000}
-                        step={10000}
-                        value={amountRange}
-                        name="amount"
-                        onValueChange={setAmountRange}
-                        className="cursor-pointer mt-4"
-                    />
+                    <ConfigProvider theme={{
+                        components: {
+                            Slider: {
+                                trackBg: '#FF4848',
+                                trackHoverBg: '#FF4848',
+                                railSize: 6,
+                                handleColor: '#EB5A3C',
+                                handleActiveColor: '#8E1616',
+
+                            },
+                        },
+                        token: {
+                            colorPrimaryBorderHover: '#FF4848',
+                        },
+                    }}>
+                        <SliderAntd range min={10000} max={500000} step={10000} value={amountRange} onChange={setAmountRange} className="w-full" />
+                    </ConfigProvider>
                     <div className="flex justify-between text-black my-4 w-full font-pacifico text-2xl">
                         <span>{formatCurrency(amountRange[0])} </span>
                         <span>{formatCurrency(amountRange[1])}</span>

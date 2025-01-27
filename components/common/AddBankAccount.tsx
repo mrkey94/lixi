@@ -9,6 +9,7 @@ import { Settings } from 'lucide-react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { getItem, setItem } from '@/lib/localStorage.helper';
 import { KEY_SETTING, SEPARATE_SETTINGS } from '@/constants';
+
 interface IBank {
     id: number;
     name: string;
