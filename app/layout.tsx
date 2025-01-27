@@ -33,6 +33,16 @@ export default function RootLayout({
         <html lang="en">
             <head>
                 <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" />
+                <Script async src="https://www.googletagmanager.com/gtag/js?id=G-648TNMGYBD"></Script>
+                <Script id="gtag-init" strategy="afterInteractive">
+                    {`
+                        window.dataLayer = window.dataLayer || [];
+                        function gtag(){dataLayer.push(arguments);}
+                        gtag('js', new Date());
+
+                        gtag('config', 'G-648TNMGYBD');
+                    `}
+                </Script>
             </head>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} ${pacifico.variable} antialiased`}
