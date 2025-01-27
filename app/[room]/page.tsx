@@ -4,7 +4,7 @@ import { AnimatedIcon } from "@/components/common/AnimatedIcon";
 import { KEY_SETTING, ListIconTet, SEPARATE_SETTINGS } from "@/constants";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { VolumeOff } from "lucide-react";
+import { Share, VolumeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import AddBankAccount from "@/components/common/AddBankAccount";
@@ -13,6 +13,7 @@ import { getItem } from "@/lib/localStorage.helper";
 import { ScratchToReveal } from "@/components/ui/scratch-to-reveal";
 import Image from 'next/image';
 import { formatCurrency } from "@/lib/price.helper";
+import { Tooltip } from "antd";
 
 export default function PageRandom({
     params,
@@ -116,6 +117,23 @@ export default function PageRandom({
         setIconsQr(newIcons);
     }, []);
 
+    const handleShareLink = useCallback(() => {
+        try {
+            navigator.clipboard.writeText(window.location.href);
+            navigator.share({
+                title: "Lì xì túi mù",
+                text: "Chúc mừng năm mới 2025",
+                url: window.location.href,
+            })
+        } catch {
+            toast({
+                variant: "destructive",
+                title: "Báo",
+                description: "Chức năng chia sẻ không khả dụng trên thiết bị này",
+            });
+        }
+    }, [toast]);
+
     return (
         <>
             <Toaster />
@@ -139,6 +157,19 @@ export default function PageRandom({
                     </motion.div>
                 )}
             </AnimatePresence>
+            {!visibleVolume && (<motion.div
+                className="absolute right-10 top-10"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+            >
+                <Tooltip title="Chia sẻ và copy" placement="left">
+                    <Share size={32}
+                        onClick={handleShareLink}
+                        color="white"
+                        className="cursor-pointer" />
+                </Tooltip>
+            </motion.div>)}
             <AddBankAccount />
             <h1 className="text-4xl font-pacifico text-white z-[9] mb-6">
                 Lì xì túi mù
