@@ -198,32 +198,30 @@ export default function PageRandom({
                     </div>
 
                     <button className="absolute font-pacifico bottom-4 w-full text-center text-[#FFD700] font-bold text-xl hover:text-[#FFF7CC] transition-colors" onClick={handleOpenLixi} >
-                        Nhận Lì Xì Ngay
+                        {'>'}Nhận Lì Xì Ngay {'<'}
                     </button>
                 </motion.div>)}
-                <AnimatePresence>
-                    {(imgQr && money) && (
-                        <motion.div
-                            ref={qrRef}
-                            key={'qr'}
-                            initial={{ height: 300, opacity: 0 }}
-                            animate={{ height: 400, opacity: 1 }}
-                            transition={{ duration: 0.8 }}
-                            className={cn(
-                                "w-[300px] bg-white transition-colors rounded-sm",
-                                "border-2 border-[#FFD700] shadow-lg cursor-pointer",
-                                "relative overflow-hidden transform hover:scale-105 transition-transform",
-                                "flex items-center justify-center"
-                            )}
-                        >
-                            <ScratchToReveal height={400} width={300} onComplete={handleCompleted} gradientColors={['#F93827', '#FF9D23', '#F93827']} minScratchPercentage={90} className="flex flex-col items-center justify-center overflow-hidden">
-                                {iconsQr}
-                                <Image src={imgQr} alt="qr" width={200} height={300} className="z-[999]" />
-                                <p className="text-2xl font-bold text-red-500 font-pacifico mt-2">{formatCurrency(money)}</p>
-                            </ScratchToReveal>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                {(imgQr && money) && (
+                    <motion.div
+                        ref={qrRef}
+                        key={'qr'}
+                        initial={{ height: 300, opacity: 0 }}
+                        animate={{ height: 400, opacity: 1 }}
+                        transition={{ duration: 0.8 }}
+                        className={cn(
+                            "w-[300px] bg-white transition-colors rounded-sm",
+                            "border-2 border-[#FFD700] shadow-lg cursor-pointer",
+                            "relative overflow-hidden transform hover:scale-105 transition-transform",
+                            "flex items-center justify-center"
+                        )}
+                    >
+                        <ScratchToReveal height={400} width={300} onComplete={handleCompleted} gradientColors={['#F93827', '#FF9D23', '#F93827']} minScratchPercentage={90} className="flex flex-col items-center justify-center overflow-hidden">
+                            {iconsQr}
+                            <Image src={imgQr} alt="qr" width={200} height={300} className="z-[999]" />
+                            <p className="text-2xl font-bold text-red-500 font-pacifico mt-2">{formatCurrency(money)}</p>
+                        </ScratchToReveal>
+                    </motion.div>
+                )}
             </AnimatePresence>
         </>
     );
