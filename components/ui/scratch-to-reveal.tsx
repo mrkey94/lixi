@@ -49,22 +49,26 @@ export const ScratchToReveal: React.FC<ScratchToRevealProps> = ({
 
   useEffect(() => {
     const handleDocumentMouseMove = (event: MouseEvent) => {
+      event.stopPropagation();
       if (!isScratching) return;
       scratch(event.clientX, event.clientY);
     };
 
     const handleDocumentTouchMove = (event: TouchEvent) => {
+      event.stopPropagation();
       if (!isScratching) return;
       const touch = event.touches[0];
       scratch(touch.clientX, touch.clientY);
     };
 
-    const handleDocumentMouseUp = () => {
+    const handleDocumentMouseUp = (e: MouseEvent) => {
+      e.stopPropagation();
       setIsScratching(false);
       checkCompletion();
     };
 
-    const handleDocumentTouchEnd = () => {
+    const handleDocumentTouchEnd = (e: TouchEvent) => {
+      e.stopPropagation();
       setIsScratching(false);
       checkCompletion();
     };
@@ -88,9 +92,15 @@ export const ScratchToReveal: React.FC<ScratchToRevealProps> = ({
     };
   }, [isScratching]);
 
-  const handleMouseDown = () => setIsScratching(true);
+  const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+    event.stopPropagation();
+    setIsScratching(true);
+  };
 
-  const handleTouchStart = () => setIsScratching(true);
+  const handleTouchStart = (event: React.TouchEvent<HTMLCanvasElement>) => {
+    event.stopPropagation();
+    setIsScratching(true);
+  };
 
   const scratch = (clientX: number, clientY: number) => {
     const canvas = canvasRef.current;

@@ -78,7 +78,7 @@ export default function Home() {
             >
                 <form onSubmit={handleRandom} className="flex flex-col items-center w-full">
                     <SparklesText
-                        text="Lì Xì Ngay!"
+                        text="Phát Lì Xì Ngay!"
                         className="mb-6 text-[#FF4848]"
                     />
                     <ConfigProvider theme={{
