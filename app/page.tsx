@@ -10,6 +10,9 @@ import { ShinyButton } from "@/components/ui/shiny-button";
 import { useRouter } from "next/navigation";
 import { HASH_PRICE, ListIconTet } from "@/constants";
 import { ConfigProvider, Slider as SliderAntd } from 'antd';
+import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
+import { cn } from "@/lib/utils";
+import { NumberTicker } from "@/components/ui/number-ticker";
 
 const texts = [
     "Chúc mừng năm mới!",
@@ -27,6 +30,16 @@ export default function Home() {
     const [icons, setIcons] = useState<React.ReactElement[]>([]);
     const [amountRange, setAmountRange] = useState([10000, 500000]);
     const { push } = useRouter();
+    const [count, setCount] = useState(1);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetch('/api/count').then((res) => res.json()).then((data) => {
+                setCount(data.count);
+            });
+        }, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         const newIcons = Array.from({ length: 25 }, (_, i) => {
@@ -112,6 +125,29 @@ export default function Home() {
                         data-theme="light"
                     ></div>
                 </form>
+            </motion.div>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.85 }}
+                className="z-10 flex items-center justify-center my-4">
+                <AnimatedGradientText>
+                    <div className="flex items-center justify-center">
+                        <NumberTicker
+
+                            value={count}
+                            className="whitespace-pre-wrap text-xl font-pacifico tracking-tighter text-black mr-2"
+                        />
+                        <span
+                            className={cn(
+                                ` text-xl font-pacifico inline animate-gradient bg-gradient-to-r from-[#F93827] via-[#FFD65A] to-[#F93827] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent`,
+                            )}
+                        >
+                            Lì xì đã được mở 🎉
+                        </span>
+                    </div>
+
+                </AnimatedGradientText>
             </motion.div>
         </>
     );
