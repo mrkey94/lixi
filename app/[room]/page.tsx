@@ -118,7 +118,7 @@ export default function PageRandom({
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ id, accountId: accountNumber }),
+            body: JSON.stringify({ id, accountId: `${code}${SEPARATE_SETTINGS}${accountNumber}` }),
         });
         const data = await response.json();
         if (data.message) {
