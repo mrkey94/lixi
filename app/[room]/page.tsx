@@ -11,12 +11,13 @@ import AddBankAccount from "@/components/common/AddBankAccount";
 import { Toaster } from "@/components/ui/toaster";
 import { getItem } from "@/lib/localStorage.helper";
 import { ScratchToReveal } from "@/components/ui/scratch-to-reveal";
-import Image from 'next/image';
 import { formatCurrency } from "@/lib/price.helper";
 import { Dropdown, QRCode } from "antd";
 import Link from "next/link";
 import confetti from "canvas-confetti";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { decodeQR } from "@/lib/qr.helper";
+import QRCodeStyling, { Options } from "qr-code-styling";
 
 export default function PageRandom({
     params,
@@ -27,10 +28,62 @@ export default function PageRandom({
     const [iconsQr, setIconsQr] = useState<React.ReactElement[]>([]);
     const [visibleVolume, setVisibleVolume] = useState(true);
     const { toast } = useToast();
-    const [imgQr, setImgQr] = useState<string | null>(null);
+    const [imgQr, setImgQr] = useState<string>();
     const [money, setMoney] = useState<number>();
     const qrRef = useRef<HTMLDivElement>(null);
     const [isVisibleShareQr, setIsVisibleShareQr] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+    const [options, setOptions] = useState<Options>({
+        width: 300,
+        height: 300,
+        type: 'svg',
+        data: 'hello',
+        margin: 10,
+        qrOptions: {
+            typeNumber: 0,
+            mode: 'Byte',
+            errorCorrectionLevel: 'Q'
+        },
+        imageOptions: {
+            hideBackgroundDots: true,
+            imageSize: 0.4,
+            margin: 20,
+            crossOrigin: 'anonymous',
+            saveAsBlob: true,
+        },
+        cornersSquareOptions: {
+            type: 'extra-rounded',
+            color: '#ff1900',
+        },
+        dotsOptions: {
+            color: '#222222',
+            type: "dots",
+            gradient: { type: 'linear', colorStops: [{ offset: 0, color: '#fc3d03' }, { offset: 1, color: '#FFD700' }] },
+        },
+        cornersDotOptions: {
+            type: 'dot',
+            color: '#ff1900',
+        },
+        backgroundOptions: {
+            color: 'white',
+        },
+    });
+    const [qrCode, setQrCode] = useState<QRCodeStyling>();
+
+    useEffect(() => {
+        setQrCode(new QRCodeStyling(options));
+    }, [options])
+
+    useEffect(() => {
+        if (!qrCode) return;
+        qrCode?.update(options);
+    }, [qrCode, options]);
+
+    useEffect(() => {
+        if (ref.current) {
+            qrCode?.append(ref.current);
+        }
+    }, [qrCode, ref]);
 
     useEffect(() => {
         const newIcons = Array.from({ length: 25 }, (_, i) => {
@@ -131,7 +184,14 @@ export default function PageRandom({
         }
         setMoney(data.money);
         handleFireWork();
-        setImgQr(`https://qr.sepay.vn/img?bank=${code}&acc=${accountNumber}&template=qronly&amount=${data.money}&des=CHUC MUNG NAM MOI 2025`);
+        const qrCode = `https://qr.sepay.vn/img?bank=${code}&acc=${accountNumber}&template=qronly&amount=${data.money}&des=CHUC MUNG NAM MOI 2025`;
+        const dataDecode = await decodeQR(qrCode);
+        setImgQr(dataDecode);
+        setOptions(options => ({
+            ...options,
+            data: dataDecode
+        }));
+
 
     }, [handleFireWork, params, toast]);
 
@@ -260,7 +320,7 @@ export default function PageRandom({
                     >
                         <ScratchToReveal height={400} width={300} onComplete={handleCompleted} gradientColors={['#F93827', '#FF9D23', '#F93827']} minScratchPercentage={90} className="flex flex-col items-center justify-center overflow-hidden">
                             {iconsQr}
-                            <Image src={imgQr} alt="qr" width={200} height={300} className="z-[999]" />
+                            <div ref={ref} />
                             <p className="text-2xl font-bold text-red-500 font-pacifico mt-2">{formatCurrency(money)}</p>
                         </ScratchToReveal>
                     </motion.div>
