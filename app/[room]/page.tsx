@@ -229,7 +229,7 @@ export default function PageRandom({
                     <Link href="https://nguyenconggioi.me" target="_blank">
                         <p className="text-white text-center font-mono text-xs transition-transform transform hover:scale-105">
                             Designed and Made with <br />
-                            Nguyen Cong Gioi 2024
+                            Nguyen Cong Gioi 2025
                         </p>
                     </Link>
                 </div>
