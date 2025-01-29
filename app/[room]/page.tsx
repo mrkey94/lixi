@@ -4,7 +4,7 @@ import { AnimatedIcon } from "@/components/common/AnimatedIcon";
 import { KEY_SETTING, ListIconTet, SEPARATE_SETTINGS } from "@/constants";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Share, VolumeOff } from "lucide-react";
+import { CopyIcon, QrCode, Share, VolumeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import AddBankAccount from "@/components/common/AddBankAccount";
@@ -13,9 +13,10 @@ import { getItem } from "@/lib/localStorage.helper";
 import { ScratchToReveal } from "@/components/ui/scratch-to-reveal";
 import Image from 'next/image';
 import { formatCurrency } from "@/lib/price.helper";
-import { Tooltip } from "antd";
+import { Dropdown, QRCode } from "antd";
 import Link from "next/link";
 import confetti from "canvas-confetti";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function PageRandom({
     params,
@@ -29,6 +30,7 @@ export default function PageRandom({
     const [imgQr, setImgQr] = useState<string | null>(null);
     const [money, setMoney] = useState<number>();
     const qrRef = useRef<HTMLDivElement>(null);
+    const [isVisibleShareQr, setIsVisibleShareQr] = useState(false);
 
     useEffect(() => {
         const newIcons = Array.from({ length: 25 }, (_, i) => {
@@ -149,24 +151,18 @@ export default function PageRandom({
         setIconsQr(newIcons);
     }, []);
 
-    const handleShareLink = useCallback(() => {
-        try {
-            navigator.clipboard.writeText(window.location.href);
-            navigator.share({
-                title: "Lì xì túi mù",
-                text: "Chúc mừng năm mới 2025",
-                url: window.location.href,
-            })
-        } catch {
-            toast({
-                variant: "destructive",
-                title: "Báo",
-                description: "Chức năng chia sẻ không khả dụng trên thiết bị này",
-            });
-        }
+    const handleShareQr = useCallback(() => {
+        console.log(window.location.href);
+        setIsVisibleShareQr(true);
+    }, []);
+
+    const handleCopy = useCallback(() => {
+        navigator.clipboard.writeText(window.location.href);
+        toast({
+            title: "Copy",
+            description: "Đã sao chép đường dẫn",
+        });
     }, [toast]);
-
-
 
     return (
         <>
@@ -197,12 +193,25 @@ export default function PageRandom({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
             >
-                <Tooltip title="Chia sẻ và copy" placement="left">
+                <Dropdown menu={{
+                    items: [{
+                        key: 'copy',
+                        label: 'Copy link',
+                        icon: <CopyIcon size={16} />,
+                        onClick: handleCopy
+                    },
+                    {
+                        key: 'qr',
+                        label: 'Chia sẻ QR',
+                        icon: <QrCode size={16} />,
+                        onClick: handleShareQr
+                    }]
+                }} trigger={["click"]}>
                     <Share size={32}
-                        onClick={handleShareLink}
                         color="white"
                         className="cursor-pointer" />
-                </Tooltip>
+                </Dropdown>
+
             </motion.div>)}
             <AddBankAccount />
             <h1 className="text-4xl font-pacifico text-white z-[9] mb-6">
@@ -267,6 +276,19 @@ export default function PageRandom({
                     </Link>
                 </div>
             </div>
+            <Dialog open={isVisibleShareQr} onOpenChange={setIsVisibleShareQr}>
+                <DialogContent className="w-fit rounded-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-center">Qr Code</DialogTitle>
+                        <DialogDescription className="text-center">
+                            Dùng QR để chia sẻ cho bạn bè nhé 🧧
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="w-full flex justify-center items-center">
+                        <QRCode value={window.location.href} />
+                    </div>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }
