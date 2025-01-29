@@ -94,7 +94,6 @@ export default function PageRandom({
     }, []);
 
     const handleOpenLixi = useCallback(async () => {
-        handleFireWork();
         const setting = getItem<string>(KEY_SETTING);
         if (!setting) {
             toast({
@@ -131,6 +130,7 @@ export default function PageRandom({
             return;
         }
         setMoney(data.money);
+        handleFireWork();
         setImgQr(`https://qr.sepay.vn/img?bank=${code}&acc=${accountNumber}&template=qronly&amount=${data.money}&des=CHUC MUNG NAM MOI 2025`);
 
     }, [handleFireWork, params, toast]);
