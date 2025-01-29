@@ -15,6 +15,7 @@ import Image from 'next/image';
 import { formatCurrency } from "@/lib/price.helper";
 import { Tooltip } from "antd";
 import Link from "next/link";
+import confetti from "canvas-confetti";
 
 export default function PageRandom({
     params,
@@ -61,7 +62,37 @@ export default function PageRandom({
         };
     }, []);
 
+    const handleFireWork = useCallback(() => {
+        const duration = 7 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+        const randomInRange = (min: number, max: number) =>
+            Math.random() * (max - min) + min;
+
+        const interval = window.setInterval(() => {
+            const timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
+
+            const particleCount = 50 * (timeLeft / duration);
+            confetti({
+                ...defaults,
+                particleCount,
+                origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+            });
+            confetti({
+                ...defaults,
+                particleCount,
+                origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+            });
+        }, 250);
+    }, []);
+
     const handleOpenLixi = useCallback(async () => {
+        handleFireWork();
         const setting = getItem<string>(KEY_SETTING);
         if (!setting) {
             toast({
@@ -100,7 +131,7 @@ export default function PageRandom({
         setMoney(data.money);
         setImgQr(`https://qr.sepay.vn/img?bank=${code}&acc=${accountNumber}&template=qronly&amount=${data.money}&des=CHUC MUNG NAM MOI 2025`);
 
-    }, [toast, params]);
+    }, [handleFireWork, params, toast]);
 
     const handleCompleted = useCallback(() => {
         const newIcons = Array.from({ length: 5 }, (_, i) => {
@@ -134,6 +165,8 @@ export default function PageRandom({
             });
         }
     }, [toast]);
+
+
 
     return (
         <>
