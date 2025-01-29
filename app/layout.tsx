@@ -32,7 +32,6 @@ export default function RootLayout({
     return (
         <html lang="en">
             <head>
-                <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" />
                 <Script async src="https://www.googletagmanager.com/gtag/js?id=G-648TNMGYBD"></Script>
                 <Script id="gtag-init" strategy="afterInteractive">
                     {`
