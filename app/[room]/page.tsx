@@ -75,13 +75,6 @@ export default function PageRandom({
     }, [options])
 
     useEffect(() => {
-        toast({
-            title: "Chúc Mừng Năm Mới",
-            description: "Khuya rồi ngủ điii 😴",
-        });
-    }, [toast])
-
-    useEffect(() => {
         if (!qrCode) return;
         qrCode?.update(options);
     }, [qrCode, options]);
