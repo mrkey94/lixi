@@ -12,12 +12,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { getItem } from "@/lib/localStorage.helper";
 import { ScratchToReveal } from "@/components/ui/scratch-to-reveal";
 import { formatCurrency } from "@/lib/price.helper";
-import { Dropdown, QRCode } from "antd";
+import { Dropdown, FloatButton, QRCode } from "antd";
 import Link from "next/link";
 import confetti from "canvas-confetti";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { decodeQR } from "@/lib/qr.helper";
 import QRCodeStyling, { Options } from "qr-code-styling";
+import { CoffeeOutlined } from '@ant-design/icons';
+import Image from "next/image";
 
 export default function PageRandom({
     params,
@@ -32,6 +34,7 @@ export default function PageRandom({
     const [money, setMoney] = useState<number>();
     const qrRef = useRef<HTMLDivElement>(null);
     const [isVisibleShareQr, setIsVisibleShareQr] = useState(false);
+    const [isVisibleCoffee, setIsVisibleCoffee] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
     const [options, setOptions] = useState<Options>({
         width: 300,
@@ -227,52 +230,57 @@ export default function PageRandom({
     return (
         <>
             <Toaster />
-            <div className="absolute top-0 left-0 right-0 bottom-0 ">
+            <div className="absolute top-0 left-0 right-0 bottom-0">
                 {icons}
             </div>
-            <AnimatePresence>
-                {visibleVolume && (
-                    <motion.div
-                        className="absolute right-10 top-10"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                    >
-                        <VolumeOff
-                            size={32}
-                            color="white"
-                            className="cursor-pointer"
-                            onClick={() => setVisibleVolume(false)}
-                        />
-                    </motion.div>
-                )}
-            </AnimatePresence>
-            {!visibleVolume && (<motion.div
-                className="absolute right-10 top-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-            >
-                <Dropdown menu={{
-                    items: [{
-                        key: 'copy',
-                        label: 'Copy link',
-                        icon: <CopyIcon size={16} />,
-                        onClick: handleCopy
-                    },
-                    {
-                        key: 'qr',
-                        label: 'Chia sẻ QR',
-                        icon: <QrCode size={16} />,
-                        onClick: handleShareQr
-                    }]
-                }} trigger={["click"]}>
-                    <Share size={32}
-                        color="white"
-                        className="cursor-pointer" />
-                </Dropdown>
 
-            </motion.div>)}
+            <div className="absolute right-10 top-10 flex justify-center items-center gap-x-2">
+                <AnimatePresence>
+                    {visibleVolume && (
+                        <motion.div
+                            key={'volume'}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5 }}
+                            exit={{ opacity: 0 }}
+                        >
+                            <VolumeOff
+                                size={32}
+                                color="white"
+                                className="cursor-pointer"
+                                onClick={() => setVisibleVolume(false)}
+                            />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                <motion.div
+                    key={'share'}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                >
+                    <Dropdown menu={{
+                        items: [{
+                            key: 'copy',
+                            label: 'Copy link',
+                            icon: <CopyIcon size={16} />,
+                            onClick: handleCopy
+                        },
+                        {
+                            key: 'qr',
+                            label: 'Chia sẻ QR',
+                            icon: <QrCode size={16} />,
+                            onClick: handleShareQr
+                        }]
+                    }} trigger={["click"]}>
+                        <Share size={32}
+                            color="white"
+                            className="cursor-pointer" />
+                    </Dropdown>
+
+                </motion.div>
+
+            </div>
             <AddBankAccount />
             <h1 className="text-4xl font-pacifico text-white z-[9] mb-6">
                 Lì xì túi mù
@@ -336,6 +344,20 @@ export default function PageRandom({
                     </Link>
                 </div>
             </div>
+            <FloatButton icon={<CoffeeOutlined className="text-red-500" />} onClick={() => setIsVisibleCoffee(true)} />
+            <Dialog open={isVisibleCoffee} onOpenChange={setIsVisibleCoffee}>
+                <DialogContent className="w-fit rounded-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-center">QR của tui</DialogTitle>
+                        <DialogDescription className="text-center">
+                            Lì xì chủ shop ly Coffee😁, nếu bạn thấy thú vị 👇
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="w-full flex justify-center items-center">
+                        <Image src="/my-qr.jpg" width={200} height={300} alt="My Qr code" className="rounded-lg object-cover" />
+                    </div>
+                </DialogContent>
+            </Dialog>
             <Dialog open={isVisibleShareQr} onOpenChange={setIsVisibleShareQr}>
                 <DialogContent className="w-fit rounded-md">
                     <DialogHeader>
