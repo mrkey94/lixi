@@ -1,0 +1,76 @@
+{
+  "type": "canvas",
+  "shape": "square",
+  "width": 300,
+  "height": 300,
+  "data": "00020101021238550010A000000727012500069704150111120302030190208QRIBFTTA53037045405500005802VN62260822CHUC MUNG NAM MOI 202563045C4E",
+  "margin": 0,
+  "qrOptions": {
+    "typeNumber": "0",
+    "mode": "Byte",
+    "errorCorrectionLevel": "Q"
+  },
+  "imageOptions": {
+    "saveAsBlob": true,
+    "hideBackgroundDots": true,
+    "imageSize": 0.4,
+    "margin": 0
+  },
+  "dotsOptions": {
+    "type": "dots",
+    "color": "#6a1a4c",
+    "roundSize": true,
+    "gradient": {
+      "type": "linear",
+      "rotation": 0,
+      "colorStops": [
+        { "offset": 0, "color": "#ff1900" },
+        { "offset": 1, "color": "#faf200" }
+      ]
+    }
+  },
+  "backgroundOptions": { "round": 0, "color": "#ffffff" },
+  "image": "10cc19bd484118dbcd0a7886a38ceddc.png",
+  "dotsOptionsHelper": {
+    "colorType": { "single": true, "gradient": false },
+    "gradient": {
+      "linear": true,
+      "radial": false,
+      "color1": "#6a1a4c",
+      "color2": "#6a1a4c",
+      "rotation": "0"
+    }
+  },
+  "cornersSquareOptions": { "type": "extra-rounded", "color": "#000000" },
+  "cornersSquareOptionsHelper": {
+    "colorType": { "single": true, "gradient": false },
+    "gradient": {
+      "linear": true,
+      "radial": false,
+      "color1": "#000000",
+      "color2": "#000000",
+      "rotation": "0"
+    }
+  },
+  "cornersDotOptions": { "type": "", "color": "#000000" },
+  "cornersDotOptionsHelper": {
+    "colorType": { "single": true, "gradient": false },
+    "gradient": {
+      "linear": true,
+      "radial": false,
+      "color1": "#000000",
+      "color2": "#000000",
+      "rotation": "0"
+    }
+  },
+  "backgroundOptionsHelper": {
+    "colorType": { "single": true, "gradient": false },
+    "gradient": {
+      "linear": true,
+      "radial": false,
+      "color1": "#ffffff",
+      "color2": "#ffffff",
+      "rotation": "0"
+    }
+  }
+}

@@ -4,16 +4,22 @@ import { AnimatedIcon } from "@/components/common/AnimatedIcon";
 import { KEY_SETTING, ListIconTet, SEPARATE_SETTINGS } from "@/constants";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Share, VolumeOff } from "lucide-react";
+import { CopyIcon, QrCode, Share, VolumeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import AddBankAccount from "@/components/common/AddBankAccount";
 import { Toaster } from "@/components/ui/toaster";
 import { getItem } from "@/lib/localStorage.helper";
 import { ScratchToReveal } from "@/components/ui/scratch-to-reveal";
-import Image from 'next/image';
 import { formatCurrency } from "@/lib/price.helper";
-import { Tooltip } from "antd";
+import { Dropdown, FloatButton, QRCode } from "antd";
+import Link from "next/link";
+import confetti from "canvas-confetti";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { decodeQR } from "@/lib/qr.helper";
+import QRCodeStyling, { Options } from "qr-code-styling";
+import { CoffeeOutlined } from '@ant-design/icons';
+import Image from "next/image";
 
 export default function PageRandom({
     params,
@@ -24,9 +30,63 @@ export default function PageRandom({
     const [iconsQr, setIconsQr] = useState<React.ReactElement[]>([]);
     const [visibleVolume, setVisibleVolume] = useState(true);
     const { toast } = useToast();
-    const [imgQr, setImgQr] = useState<string | null>(null);
+    const [imgQr, setImgQr] = useState<string>();
     const [money, setMoney] = useState<number>();
     const qrRef = useRef<HTMLDivElement>(null);
+    const [isVisibleShareQr, setIsVisibleShareQr] = useState(false);
+    const [isVisibleCoffee, setIsVisibleCoffee] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+    const [options, setOptions] = useState<Options>({
+        width: 300,
+        height: 300,
+        type: 'svg',
+        data: 'hello',
+        margin: 10,
+        qrOptions: {
+            typeNumber: 0,
+            mode: 'Byte',
+            errorCorrectionLevel: 'Q'
+        },
+        imageOptions: {
+            hideBackgroundDots: true,
+            imageSize: 0.4,
+            margin: 20,
+            crossOrigin: 'anonymous',
+            saveAsBlob: true,
+        },
+        cornersSquareOptions: {
+            type: 'extra-rounded',
+            color: '#ff1900',
+        },
+        dotsOptions: {
+            color: '#222222',
+            type: "dots",
+            gradient: { type: 'linear', colorStops: [{ offset: 0, color: '#fc3d03' }, { offset: 1, color: '#FFD700' }] },
+        },
+        cornersDotOptions: {
+            type: 'dot',
+            color: '#ff1900',
+        },
+        backgroundOptions: {
+            color: 'white',
+        },
+    });
+    const [qrCode, setQrCode] = useState<QRCodeStyling>();
+
+    useEffect(() => {
+        setQrCode(new QRCodeStyling(options));
+    }, [options])
+
+    useEffect(() => {
+        if (!qrCode) return;
+        qrCode?.update(options);
+    }, [qrCode, options]);
+
+    useEffect(() => {
+        if (ref.current) {
+            qrCode?.append(ref.current);
+        }
+    }, [qrCode, ref]);
 
     useEffect(() => {
         const newIcons = Array.from({ length: 25 }, (_, i) => {
@@ -60,6 +120,35 @@ export default function PageRandom({
         };
     }, []);
 
+    const handleFireWork = useCallback(() => {
+        const duration = 7 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+        const randomInRange = (min: number, max: number) =>
+            Math.random() * (max - min) + min;
+
+        const interval = window.setInterval(() => {
+            const timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
+
+            const particleCount = 50 * (timeLeft / duration);
+            confetti({
+                ...defaults,
+                particleCount,
+                origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+            });
+            confetti({
+                ...defaults,
+                particleCount,
+                origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+            });
+        }, 250);
+    }, []);
+
     const handleOpenLixi = useCallback(async () => {
         const setting = getItem<string>(KEY_SETTING);
         if (!setting) {
@@ -85,7 +174,7 @@ export default function PageRandom({
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ id, accountId: accountNumber }),
+            body: JSON.stringify({ id, accountId: `${code}${SEPARATE_SETTINGS}${accountNumber}` }),
         });
         const data = await response.json();
         if (data.message) {
@@ -97,9 +186,17 @@ export default function PageRandom({
             return;
         }
         setMoney(data.money);
-        setImgQr(`https://qr.sepay.vn/img?bank=${code}&acc=${accountNumber}&template=qronly&amount=${data.money}&des=CHUC MUNG NAM MOI 2025`);
+        handleFireWork();
+        const qrCode = `https://qr.sepay.vn/img?bank=${code}&acc=${accountNumber}&template=qronly&amount=${data.money}&des=CHUC MUNG NAM MOI 2025`;
+        const dataDecode = await decodeQR(qrCode);
+        setImgQr(dataDecode);
+        setOptions(options => ({
+            ...options,
+            data: dataDecode
+        }));
 
-    }, [toast, params]);
+
+    }, [handleFireWork, params, toast]);
 
     const handleCompleted = useCallback(() => {
         const newIcons = Array.from({ length: 5 }, (_, i) => {
@@ -117,59 +214,73 @@ export default function PageRandom({
         setIconsQr(newIcons);
     }, []);
 
-    const handleShareLink = useCallback(() => {
-        try {
-            navigator.clipboard.writeText(window.location.href);
-            navigator.share({
-                title: "Lì xì túi mù",
-                text: "Chúc mừng năm mới 2025",
-                url: window.location.href,
-            })
-        } catch {
-            toast({
-                variant: "destructive",
-                title: "Báo",
-                description: "Chức năng chia sẻ không khả dụng trên thiết bị này",
-            });
-        }
+    const handleShareQr = useCallback(() => {
+        console.log(window.location.href);
+        setIsVisibleShareQr(true);
+    }, []);
+
+    const handleCopy = useCallback(() => {
+        navigator.clipboard.writeText(window.location.href);
+        toast({
+            title: "Copy",
+            description: "Đã sao chép đường dẫn",
+        });
     }, [toast]);
 
     return (
         <>
             <Toaster />
-            <div className="absolute top-0 left-0 right-0 bottom-0 ">
+            <div className="absolute top-0 left-0 right-0 bottom-0">
                 {icons}
             </div>
-            <AnimatePresence>
-                {visibleVolume && (
-                    <motion.div
-                        className="absolute right-10 top-10"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                    >
-                        <VolumeOff
-                            size={32}
+
+            <div className="absolute right-10 top-10 flex justify-center items-center gap-x-2">
+                <AnimatePresence>
+                    {visibleVolume && (
+                        <motion.div
+                            key={'volume'}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5 }}
+                            exit={{ opacity: 0 }}
+                        >
+                            <VolumeOff
+                                size={32}
+                                color="white"
+                                className="cursor-pointer"
+                                onClick={() => setVisibleVolume(false)}
+                            />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                <motion.div
+                    key={'share'}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                >
+                    <Dropdown menu={{
+                        items: [{
+                            key: 'copy',
+                            label: 'Copy link',
+                            icon: <CopyIcon size={16} />,
+                            onClick: handleCopy
+                        },
+                        {
+                            key: 'qr',
+                            label: 'Chia sẻ QR',
+                            icon: <QrCode size={16} />,
+                            onClick: handleShareQr
+                        }]
+                    }} trigger={["click"]}>
+                        <Share size={32}
                             color="white"
-                            className="cursor-pointer"
-                            onClick={() => setVisibleVolume(false)}
-                        />
-                    </motion.div>
-                )}
-            </AnimatePresence>
-            {!visibleVolume && (<motion.div
-                className="absolute right-10 top-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-            >
-                <Tooltip title="Chia sẻ và copy" placement="left">
-                    <Share size={32}
-                        onClick={handleShareLink}
-                        color="white"
-                        className="cursor-pointer" />
-                </Tooltip>
-            </motion.div>)}
+                            className="cursor-pointer" />
+                    </Dropdown>
+
+                </motion.div>
+
+            </div>
             <AddBankAccount />
             <h1 className="text-4xl font-pacifico text-white z-[9] mb-6">
                 Lì xì túi mù
@@ -217,12 +328,49 @@ export default function PageRandom({
                     >
                         <ScratchToReveal height={400} width={300} onComplete={handleCompleted} gradientColors={['#F93827', '#FF9D23', '#F93827']} minScratchPercentage={90} className="flex flex-col items-center justify-center overflow-hidden">
                             {iconsQr}
-                            <Image src={imgQr} alt="qr" width={200} height={300} className="z-[999]" />
+                            <div ref={ref} />
                             <p className="text-2xl font-bold text-red-500 font-pacifico mt-2">{formatCurrency(money)}</p>
                         </ScratchToReveal>
                     </motion.div>
                 )}
             </AnimatePresence>
+            <div className="absolute left-0 right-0 bottom-[10px] ">
+                <div className="w-full flex justify-center items-center">
+                    <Link href="https://nguyenconggioi.me" target="_blank">
+                        <p className="text-white text-center font-mono text-xs transition-transform transform hover:scale-105">
+                            Designed and Made with <br />
+                            Nguyen Cong Gioi 2025
+                        </p>
+                    </Link>
+                </div>
+            </div>
+            <FloatButton icon={<CoffeeOutlined className="text-red-500" />} onClick={() => setIsVisibleCoffee(true)} />
+            <Dialog open={isVisibleCoffee} onOpenChange={setIsVisibleCoffee}>
+                <DialogContent className="w-fit rounded-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-center">QR của tui</DialogTitle>
+                        <DialogDescription className="text-center">
+                            Lì xì chủ shop ly Coffee😁, nếu bạn thấy thú vị 👇
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="w-full flex justify-center items-center">
+                        <Image src="/my-qr.jpg" width={200} height={300} alt="My Qr code" className="rounded-lg object-cover" />
+                    </div>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={isVisibleShareQr} onOpenChange={setIsVisibleShareQr}>
+                <DialogContent className="w-fit rounded-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-center">Qr Code</DialogTitle>
+                        <DialogDescription className="text-center">
+                            Dùng QR để chia sẻ cho bạn bè nhé 🧧
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="w-full flex justify-center items-center">
+                        <QRCode value={window.location.href} />
+                    </div>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }
